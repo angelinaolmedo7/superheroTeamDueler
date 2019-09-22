@@ -99,6 +99,10 @@ class Hero:
         if dmg < 0:
             self.current_health += dmg
 
+    def is_alive(self):
+        """Check whether the hero is alive and return true or false."""
+        return self.current_health > 0
+
 
 if __name__ == "__main__":
     hero = Hero("Super Tahoe", 200)
@@ -107,4 +111,6 @@ if __name__ == "__main__":
     hero.add_ability(ability)
     armor = Armor("Tough Fur", 30)
     hero.take_damage(ability.attack())
-    print(hero.current_health)
+    print(hero.is_alive())
+    hero.take_damage(15000)
+    print(hero.is_alive())
