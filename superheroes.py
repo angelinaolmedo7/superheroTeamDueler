@@ -103,14 +103,36 @@ class Hero:
         """Check whether the hero is alive and return true or false."""
         return self.current_health > 0
 
+    def fight(self, opponent):
+        """Un-narrated fight between hero and opponent."""
+        print("A fight is beginning between " + self.name + " and " +
+              opponent.name + "!")
+        # choose first attacker
+        fighter = random.randint(0, 1)
+        while self.is_alive() and opponent.is_alive():
+            if fighter == 0:
+                opponent.take_damage(self.attack())
+                fighter = 0
+            else:
+                self.take_damage(opponent.attack())
+                fighter = 1
+        if (self.is_alive()):
+            print(self.name + " won!")
+        else:
+            print(opponent.name + " won!")
+
 
 if __name__ == "__main__":
-    hero = Hero("Super Tahoe", 200)
+    hero = Hero("Superdog Tahoe", 200)
+    hero2 = Hero("Supercat Lilac", 200)
     print(hero.name + ", HP: " + str(hero.current_health))
     ability = Ability("Sonic Bark", 50)
     hero.add_ability(ability)
     armor = Armor("Tough Fur", 30)
-    hero.take_damage(ability.attack())
+    print(hero2.name + ", HP: " + str(hero2.current_health))
+    ability2 = Ability("Sharp Claws", 50)
+    hero2.add_ability(ability)
+    armor2 = Armor("Tough Fur", 30)
+    hero.fight(hero2)
     print(hero.is_alive())
-    hero.take_damage(15000)
-    print(hero.is_alive())
+    print(hero2.is_alive())
