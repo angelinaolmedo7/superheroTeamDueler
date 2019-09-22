@@ -105,8 +105,8 @@ class Hero:
 
     def fight(self, opponent):
         """Un-narrated fight between hero and opponent."""
-        print("A fight is beginning between " + self.name + " and " +
-              opponent.name + "!")
+        print('A fight is beginning between ' + self.name + ' and ' +
+              opponent.name + '!')
         # choose first attacker
         fighter = random.randint(0, 1)
         while self.is_alive() and opponent.is_alive():
@@ -117,22 +117,22 @@ class Hero:
                 self.take_damage(opponent.attack())
                 fighter = 1
         if (self.is_alive()):
-            print(self.name + " won!")
+            print(self.name + ' won!')
         else:
-            print(opponent.name + " won!")
+            print(opponent.name + ' won!')
 
 
-if __name__ == "__main__":
-    hero = Hero("Superdog Tahoe", 200)
-    hero2 = Hero("Supercat Lilac", 200)
-    print(hero.name + ", HP: " + str(hero.current_health))
-    ability = Ability("Sonic Bark", 50)
+if __name__ == '__main__':
+    hero = Hero('Superdog Tahoe', 200)
+    hero2 = Hero('Supercat Lilac', 200)
+    print(hero.name + ', HP: ' + str(hero.current_health))
+    ability = Ability('Sonic Bark', 50)
     hero.add_ability(ability)
-    armor = Armor("Tough Fur", 30)
-    print(hero2.name + ", HP: " + str(hero2.current_health))
-    ability2 = Ability("Sharp Claws", 50)
+    armor = Armor('Tough Fur', 30)
+    print(hero2.name + ', HP: ' + str(hero2.current_health))
+    ability2 = Ability('Sharp Claws', 50)
     hero2.add_ability(ability)
-    armor2 = Armor("Tough Fur", 30)
+    armor2 = Armor('Tough Fur', 30)
     hero.fight(hero2)
     print(hero.is_alive())
     print(hero2.is_alive())
