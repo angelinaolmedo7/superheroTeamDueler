@@ -63,15 +63,48 @@ class Hero:
         self.starting_health = starting_health
         self.current_health = self.starting_health
 
+    def add_ability(self, ability):
+        """Add ability to abilities list."""
+        self.abilities.append(ability)
+
+    def attack(self):
+        """
+        Calculate the total damage from all ability attacks.
+
+        return: total:Int
+        """
+        dmg = 0
+        for abl in self.abilities:
+            dmg += abl.attack()
+        return dmg
+
+    def add_armor(self, armor):
+        """Add armor to armors list."""
+        self.armors.append(armor)
+
+    def defend(self):
+        """
+        Calculate the total damage blocked from all armors.
+
+        return: total:Int
+        """
+        bl = 0
+        for bl in self.armors:
+            bl += bl.block()
+        return bl
+
+    def take_damage(self, damage):
+        """Update self.current_health with damage-defense."""
+        dmg = self.defend()-damage
+        if dmg < 0:
+            self.current_health += dmg
+
 
 if __name__ == "__main__":
-    ability = Ability("Debugging Ability", 20)
-    print(ability.name)
-    print(ability.attack())
-    armor = Armor("Shield", 12)
-    print(armor.name)
-    print(armor.block())
-
-    my_hero = Hero("Super Tahoe", 200)
-    print(my_hero.name)
-    print(my_hero.current_health)
+    hero = Hero("Super Tahoe", 200)
+    print(hero.name + ", HP: " + str(hero.current_health))
+    ability = Ability("Sonic Bark", 50)
+    hero.add_ability(ability)
+    armor = Armor("Tough Fur", 30)
+    hero.take_damage(ability.attack())
+    print(hero.current_health)
