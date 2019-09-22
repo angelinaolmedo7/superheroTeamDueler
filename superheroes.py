@@ -24,6 +24,14 @@ class Ability:
         return random.randint(0, self.max_damage)
 
 
+class Weapon(Ability):
+    """The Weapon class is a type of Ability."""
+
+    def attack(self):
+        """Return a damage value between 50% and 100% of self.max_damage."""
+        return random.randint(self.max_damage//2, self.max_damage)
+
+
 class Armor:
     """Create armor class."""
 
@@ -122,6 +130,47 @@ class Hero:
             print(opponent.name + ' won!')
 
 
+class Team:
+    """A list of heroes."""
+
+    def __init__(self, name):
+        """Instantiate instance properties.
+
+        name: String
+        heroes: List of Hero objects
+        """
+        self.name = name
+        self.heroes = []
+
+    def add_hero(self, hero):
+        """Add a hero to the team."""
+        self.heroes.append(hero)
+
+    def remove_hero(self, hero):
+        """Remove Hero object from heores list by object passed in."""
+        if hero in self.heroes:
+            self.heroes.remove(hero)
+        else:
+            return 0
+
+    def remove_hero_by_name(self, hero_name):
+        """Remove Hero object from heores list by name passed in."""
+        for hero in self.heroes:
+            if hero.name == hero_name:
+                self.remove_hero(hero)
+        return 0
+
+    def view_all_heroes(self):
+        """Print all hero names in list."""
+        rtn = ""
+        if len(self.heroes) > 0:
+            for hero in self.heroes:
+                rtn += hero.name + ', '
+            print(rtn[:-2])
+        else:
+            print('No heroes on the team {}!'.format(self.name))
+
+
 if __name__ == '__main__':
     hero = Hero('Superdog Tahoe', 200)
     hero2 = Hero('Supercat Lilac', 200)
@@ -130,9 +179,12 @@ if __name__ == '__main__':
     hero.add_ability(ability)
     armor = Armor('Tough Fur', 30)
     print(hero2.name + ', HP: ' + str(hero2.current_health))
-    ability2 = Ability('Sharp Claws', 50)
-    hero2.add_ability(ability)
-    armor2 = Armor('Tough Fur', 30)
-    hero.fight(hero2)
-    print(hero.is_alive())
-    print(hero2.is_alive())
+
+    team = Team('Cool Team')
+    team.add_hero(hero)
+    team.add_hero(hero2)
+    team.view_all_heroes()
+    team.remove_hero(hero)
+    team.view_all()
+    team.remove_hero_by_name('Supercat Lilac')
+    team.view_all_heroes()
