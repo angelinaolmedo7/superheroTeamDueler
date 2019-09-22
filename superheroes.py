@@ -45,6 +45,25 @@ class Armor:
         return random.randint(0, self.max_block)
 
 
+class Hero:
+    """Create Hero class."""
+
+    def __init__(self, name, starting_health=100):
+        """Instantiate instance properties.
+
+        abilities: List
+        armors: List
+        name: String
+        starting_health: Integer
+        current_health: Integer
+        """
+        self.abilities = []
+        self.armors = []
+        self.name = name
+        self.starting_health = starting_health
+        self.current_health = self.starting_health
+
+
 if __name__ == "__main__":
     ability = Ability("Debugging Ability", 20)
     print(ability.name)
@@ -52,3 +71,7 @@ if __name__ == "__main__":
     armor = Armor("Shield", 12)
     print(armor.name)
     print(armor.block())
+
+    my_hero = Hero("Super Tahoe", 200)
+    print(my_hero.name)
+    print(my_hero.current_health)
