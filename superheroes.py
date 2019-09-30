@@ -21,7 +21,6 @@ class Ability:
 
         Damage between 0 and the value set by self.max_damage.
         """
-        print('Attacking with {}.'.format(self.name))
         return random.randint(0, self.max_damage)
 
 
@@ -94,8 +93,10 @@ class Hero:
         """
         dmg = 0
         for abl in self.abilities:
-            dmg += abl.attack()
-            print('{} | {}'.format(abl.name, dmg))
+            damg = abl.attack()
+            print(f'Attacking with {abl.name} for {damg} damage.')
+            # print('{} | {}'.format(abl.name, dmg))
+            dmg += damg
         return dmg
 
     def add_armor(self, armor):
@@ -110,7 +111,9 @@ class Hero:
         """
         bl = 0
         for arm in self.armors:
-            bl += arm.block()
+            blo = arm.block()
+            print(f'Up to {blo} damage blocked with {arm.name}.')
+            bl += blo
         return bl
 
     def take_damage(self, damage):
@@ -137,14 +140,14 @@ class Hero:
         while self.is_alive() and opponent.is_alive() and rounds < 200:
             if fighter == 0:
                 damage = self.attack()
-                print(damage)
+                # print(damage)
                 opponent.take_damage(damage)
-                fighter = 0
+                fighter = 1
             else:
                 damage = opponent.attack()
-                print(damage)
+                # print(damage)
                 self.take_damage(damage)
-                fighter = 1
+                fighter = 0
             print('{}: {} HP | {}: {} HP'.
                   format(self.name, self.current_health,
                          opponent.name, opponent.current_health))
@@ -167,6 +170,11 @@ class Hero:
     def add_deaths(self, num_deaths=1):
         """Update deaths with num_deaths."""
         self.deaths += num_deaths
+
+    def get_stats(self):
+        """Return hero's stats in a formatted string."""
+        return '{} | Kills: {} | Deaths: {}'.format(
+            self.name, self.kills, self.deaths)
 
 
 class Team:
@@ -229,6 +237,14 @@ class Team:
                 living.append(hero)
         return living
 
+    def list_living_names(self):
+        """Return a string with the names of all living hereos."""
+        live_list = self.list_living()
+        rtn = ''
+        for hero in live_list:
+            rtn += hero.name + ' '
+        return rtn.strip()
+
     def attack(self, other_team):
         """Battle each team against eachother."""
         print('A fight is beginning between {} and {}!'
@@ -248,31 +264,171 @@ class Team:
                   format(hero.name, hero.kills, hero.deaths))
 
 
-if __name__ == '__main__':
-    hero = Hero('Superdog Tahoe', 200)
-    hero2 = Hero('Supercat Lilac', 200)
-    hero.add_ability(Ability('Sonic Bark', 50))
-    hero.add_armor(Armor('Tough Fur', 30))
-    hero2.add_ability(Ability('Sharp Claws', 50))
-    hero2.add_armor(Armor('Whisker Shield', 30))
+class Arena:
+    """Arena to hold teams of heroes."""
 
-    team = Team('Cool Team')
-    team.add_hero(hero)
-    team.add_hero(hero2)
-    team.view_all_heroes()
+    def __init__(self):
+        """
+        Instantiate properties.
 
-    hero3 = Hero('Superdog Dora', 200)
-    hero4 = Hero('Supercat Boogie', 200)
-    hero3.add_ability(Ability('Sonic Bark', 50))
-    hero3.add_armor(Armor('Tough Fur', 30))
-    hero4.add_ability(Ability('Sharp Claws', 50))
-    hero4.add_armor(Armor('Whisker Shield', 30))
+        team_one: None
+        team_two: None
+        """
+        self.team_one = None
+        self.team_one = None
 
-    team2 = Team('Less Cool Team')
-    team2.add_hero(hero3)
-    team2.add_hero(hero4)
-    team2.view_all_heroes()
+    def create_ability(self):
+        """
+        Prompt for Ability information.
 
-    team.attack(team2)
-    team.stats()
-    team2.stats()
+        Return Ability with values from user Input
+        """
+        ability_name = input('Name of Ability: ').title()
+        ability_power = ''
+        while not ability_power.isnumeric():
+            ability_power = input('Max. Power of Ability: ')
+        ability_power = int(ability_power)
+        return Ability(ability_name, ability_power)
+
+    def create_weapon(self):
+        """
+        Prompt for Weapon information.
+
+        Return Weapon with values from user Input
+        """
+        weapon_name = input('Name of Weapon: ').title()
+        weapon_power = ''
+        while not weapon_power.isnumeric():
+            weapon_power = input('Max. Power of Weapon: ')
+        weapon_power = int(weapon_power)
+        return Weapon(weapon_name, weapon_power)
+
+    def create_armor(self):
+        """
+        Prompt for Armor information.
+
+        Return Armor with values from user Input
+        """
+        armor_name = input('Name of Armor: ').title()
+        armor_power = ''
+        while not armor_power.isnumeric():
+            armor_power = input('Max. Power of Armor: ')
+        armor_power = int(armor_power)
+        return Armor(armor_name, armor_power)
+
+    def create_hero(self):
+        """
+        Prompt for Hero information.
+
+        Return Hero with values from user Input
+        """
+        hero_name = input('Name of Hero: ').title()
+        hero_health = ''
+        while not hero_health.isnumeric():
+            hero_health = input('Max. Health of Hero: ')
+        hero_health = int(hero_health)
+        hero = Hero(hero_name, hero_health)
+
+        abilities_count = ''
+        while not abilities_count.isnumeric():
+            abilities_count = input('Number of abilities: ')
+        abilities_count = int(abilities_count)
+        for x in range(0, abilities_count):
+            hero.add_ability(self.create_ability())
+
+        weapons_count = ''
+        while not weapons_count.isnumeric():
+            weapons_count = input('Number of weapons: ')
+        weapons_count = int(weapons_count)
+        for x in range(0, weapons_count):
+            hero.add_weapon(self.create_weapon())
+
+        armors_count = ''
+        while not armors_count.isnumeric():
+            armors_count = input('Number of armors: ')
+        armors_count = int(armors_count)
+        for x in range(0, armors_count):
+            hero.add_armor(self.create_armor())
+
+        return hero
+
+    def create_team(self):
+        """
+        Prompt for Team information.
+
+        Return Team with values from user Input
+        """
+        team_name = input('Name of Team: ').title()
+        team = Team(team_name)
+
+        heroes_count = ''
+        while not heroes_count.isnumeric():
+            heroes_count = input('Number of heroes on {}: '.format(team_name))
+        heroes_count = int(heroes_count)
+        for x in range(0, heroes_count):
+            team.add_hero(self.create_hero())
+        return team
+
+    def build_team_one(self):
+        """Set arena team one."""
+        self.team_one = self.create_team()
+
+    def build_team_two(self):
+        """Meet specs w/ this function."""
+        self.team_two = self.create_team()
+
+    def team_battle(self):
+        """Battle team_one and team_two together."""
+        self.team_one.attack(self.team_two)
+        self.show_stats()
+
+    def show_stats(self):
+        """Display team statistics."""
+        print('------BATTLE RESULTS------')
+        if not self.team_one.any_alive():
+            print(f'Winner: {self.team_two.name}')
+            print('Surviving heroes: ' + self.team_two.list_living_names())
+        elif not self.team_two.any_alive():
+            print(f'Winner: {self.team_one.name}')
+            print('Surviving heroes: ' + self.team_one.list_living_names())
+        else:
+            print('No clear winner...')
+        print(f'{self.team_one.name} | ' + self.avg_kd(self.team_one))
+        print(f'{self.team_two.name} | ' + self.avg_kd(self.team_two))
+
+    def avg_kd(self, team):
+        """Return average K/D ratio for heroes on the team."""
+        kills = 0
+        for hero in team.heroes:
+            kills += hero.kills
+        kills = kills//len(team.heroes)
+        deaths = 0
+        for hero in team.heroes:
+            deaths += hero.deaths
+        deaths = deaths//len(team.heroes)
+        return f'Average Kills: {kills} / Average Deaths: {deaths}'
+
+
+if __name__ == "__main__":
+    game_is_running = True
+
+    # Instantiate Game Arena
+    arena = Arena()
+
+    # Build Teams
+    arena.build_team_one()
+    arena.build_team_two()
+
+    while game_is_running:
+
+        arena.team_battle()
+        play_again = input("Play Again? Y or N: ")
+
+        # Check for Player Input
+        if play_again.lower() == "n":
+            game_is_running = False
+
+        else:
+            # Revive heroes to play again
+            arena.team_one.revive_heroes()
+            arena.team_two.revive_heroes()
