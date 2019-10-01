@@ -11,10 +11,12 @@ class Ability:
         Create instance variables.
 
         name: string
-        max_damage; integer
+        max_damage: integer
+        is_explosive: bool
         """
         self.name = name
         self.max_damage = max_damage
+        self.is_explosive = False
 
     def attack(self):
         """
@@ -31,6 +33,22 @@ class Weapon(Ability):
     def attack(self):
         """Return a damage value between 50% and 100% of self.max_damage."""
         return random.randint(self.max_damage//2, self.max_damage)
+
+
+class Explosive(Weapon):
+    """A weapon that does damage to both hero and opponent."""
+
+    def __init__(self, name, max_damage):
+        """
+        Create instance variables.
+
+        name: string
+        max_damage: integer
+        is_explosive: bool
+        """
+        self.name = name
+        self.max_damage = max_damage
+        self.is_explosive = True
 
 
 class Armor:
@@ -86,6 +104,11 @@ class Hero:
         self.abilities.append(weapon)
         print('{} now has {}.'.format(self.name, weapon.name))
 
+    def add_explosive(self, explosive):
+        """Add a weapon to abilities list."""
+        self.abilities.append(explosive)
+        print('{} now has {}.'.format(self.name, explosive.name))
+
     def attack(self):
         """
         Calculate the total damage from all ability attacks.
@@ -96,8 +119,12 @@ class Hero:
         for abl in self.abilities:
             damg = abl.attack()
             print(f'Attacking with {abl.name} for {damg} damage.')
-            # print('{} | {}'.format(abl.name, dmg))
             dmg += damg
+            # print('{} | {}'.format(abl.name, dmg))
+            if abl.is_explosive:
+                self_damage = abl.attack()
+                print(f'Damaged self for {self_damage} damage!')
+                self.take_damage(self_damage)
         return dmg
 
     def add_armor(self, armor):
@@ -305,6 +332,19 @@ class Arena:
         weapon_power = int(weapon_power)
         return Weapon(weapon_name, weapon_power)
 
+    def create_explosive(self):
+        """
+        Prompt for Explosive information.
+
+        Return Explosive with values from user Input
+        """
+        explosive_name = input('Name of Explosive: ').title()
+        explosive_power = ''
+        while not explosive_power.isnumeric():
+            explosive_power = input('Max. Power of Explosive: ')
+        explosive_power = int(explosive_power)
+        return Explosive(explosive_name, explosive_power)
+
     def create_armor(self):
         """
         Prompt for Armor information.
@@ -344,6 +384,13 @@ class Arena:
         weapons_count = int(weapons_count)
         for x in range(0, weapons_count):
             hero.add_weapon(self.create_weapon())
+
+        explosives_count = ''
+        while not explosives_count.isnumeric():
+            explosives_count = input('Number of explosives: ')
+        explosives_count = int(explosives_count)
+        for x in range(0, explosives_count):
+            hero.add_explosive(self.create_explosive())
 
         armors_count = ''
         while not armors_count.isnumeric():
@@ -446,6 +493,9 @@ if __name__ == "__main__":
         # Build Teams
         arena.build_team_one()
         arena.build_team_two()
+
+        arena.save_arena()
+
     elif 'load' in load_new:
         print('CAUTION: This process is held together with duct tape and hope'
               ' and if you enter a name that doesn\'t exist you will have to'
