@@ -1,5 +1,6 @@
 """Superheroes."""
 import random
+import pickle
 
 
 class Ability:
@@ -267,13 +268,14 @@ class Team:
 class Arena:
     """Arena to hold teams of heroes."""
 
-    def __init__(self):
+    def __init__(self, username):
         """
         Instantiate properties.
 
         team_one: None
         team_two: None
         """
+        self.username = username
         self.team_one = None
         self.team_one = None
 
@@ -361,9 +363,9 @@ class Arena:
         team_name = input('Name of Team: ').title()
         team = Team(team_name)
 
-        heroes_count = ''
-        while not heroes_count.isnumeric():
-            heroes_count = input('Number of heroes on {}: '.format(team_name))
+        heroes_count = input('Number of heroes on {}: '.format(team_name))
+        while not heroes_count.isnumeric() or int(heroes_count) < 1:
+            heroes_count = input('There must be at least one hero! ')
         heroes_count = int(heroes_count)
         for x in range(0, heroes_count):
             team.add_hero(self.create_hero())
@@ -408,20 +410,57 @@ class Arena:
         deaths = deaths//len(team.heroes)
         return f'Average Kills: {kills} / Average Deaths: {deaths}'
 
+    def save_arena(self):
+        """Add the arena data to savefile."""
+        filename = 'save_data/'+self.username
+        savefile = open(filename, 'wb')
+        pickle.dump(self, savefile)
+        savefile.close()
+
+
+def load_arena(username):
+    """Load an already existing user."""
+    filename = 'save_data/'+username
+    loadfile = open(filename, 'rb')
+    user = pickle.load(loadfile)
+    loadfile.close()
+    return user
+
 
 if __name__ == "__main__":
     game_is_running = True
 
-    # Instantiate Game Arena
-    arena = Arena()
+    load_new = input('Load existing arena or create new arena? [LOAD/NEW]: ')
+    while 'load' not in load_new.lower() and 'new' not in load_new.lower():
+        load_new = input('[LOAD/NEW]: ')
+    if 'new' in load_new:
+        new_name = input('Name new arena: ').strip()
+        while not new_name.isalnum() or ' ' in new_name:
+            if not new_name.isalnum():
+                new_name = input('Only alphanumerical characters please!: ')
+            else:
+                new_name = input('No spaces please!: ')
+        # Instantiate Game Arena
+        arena = Arena(new_name)
 
-    # Build Teams
-    arena.build_team_one()
-    arena.build_team_two()
+        # Build Teams
+        arena.build_team_one()
+        arena.build_team_two()
+    elif 'load' in load_new:
+        print('CAUTION: This process is held together with duct tape and hope'
+              ' and if you enter a name that doesn\'t exist you will have to'
+              ' restart the program.')
+        load_name = input('Name of existing arena: ')
+        arena = load_arena(load_name)
+        arena.team_one.revive_heroes()
+        arena.team_two.revive_heroes()
+    else:
+        print('This wasn\'t supposed to happen. Please restart.')
 
     while game_is_running:
 
         arena.team_battle()
+        arena.save_arena()
         play_again = input("Play Again? Y or N: ")
 
         # Check for Player Input
@@ -430,5 +469,6 @@ if __name__ == "__main__":
 
         else:
             # Revive heroes to play again
+            print('-------------------------')
             arena.team_one.revive_heroes()
             arena.team_two.revive_heroes()
